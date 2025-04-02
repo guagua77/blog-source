@@ -3,25 +3,25 @@ name: Deploy Hexo Blog
 on:
   push:
     branches:
-      - master  
+      - master  # 或master，取决于你的默认分支
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # 更新到v3
         with:
           submodules: true
           fetch-depth: 0
       
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3  # 更新到v3
         with:
-          node-version: '14'
+          node-version: '16'  # 更新到更新的Node版本
       
       - name: Cache dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3  # 更新到v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -39,5 +39,5 @@ jobs:
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
           external_repository: guagua77/guagua77.github.io
-          publish_branch: master 
+          publish_branch: master  # 或master
           publish_dir: ./public
