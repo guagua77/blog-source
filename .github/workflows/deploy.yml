@@ -22,10 +22,10 @@ jobs:
           npm install
           npm install hexo-cli -g
       
-      - name: Install Theme
-        run: |
-          rm -rf themes/next
-          git clone https://github.com/theme-next/hexo-theme-next themes/next
+      # - name: Install Theme
+      #   run: |
+      #     rm -rf themes/next
+      #     git clone https://github.com/theme-next/hexo-theme-next themes/next
       
       - name: Build
         run: |
