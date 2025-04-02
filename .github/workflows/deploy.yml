@@ -11,35 +11,34 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          # 移除子模块相关配置
-          # submodules: true  # 删除或注释这一行
-          fetch-depth: 0
-      
-      # 其余配置保持不变
+        
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
       
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      
       - name: Install Dependencies
-        run: npm install
+        run: |
+          npm install
+          npm install hexo-cli -g
+      
+      - name: Install Theme
+        run: |
+          rm -rf themes/next
+          git clone https://github.com/theme-next/hexo-theme-next themes/next
       
       - name: Build
-        run: npx hexo clean && npx hexo generate
+        run: |
+          hexo clean
+          hexo generate
+          echo "Generated files in public directory:"
+          find public -type f | sort | head -20
       
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
           external_repository: guagua77/guagua77.github.io
-          publish_branch: main  # 或master
+          publish_branch: main
           publish_dir: ./public
+          force_orphan: true  # 确保完全替换目标仓库内容
