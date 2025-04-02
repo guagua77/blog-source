@@ -3,25 +3,27 @@ name: Deploy Hexo Blog
 on:
   push:
     branches:
-      - master  # 或master，取决于你的默认分支
+      - master  # 或你的默认分支
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3  # 更新到v3
+        uses: actions/checkout@v3
         with:
-          submodules: true
+          # 移除子模块相关配置
+          # submodules: true  # 删除或注释这一行
           fetch-depth: 0
       
+      # 其余配置保持不变
       - name: Setup Node.js
-        uses: actions/setup-node@v3  # 更新到v3
+        uses: actions/setup-node@v3
         with:
-          node-version: '16'  # 更新到更新的Node版本
+          node-version: '16'
       
       - name: Cache dependencies
-        uses: actions/cache@v3  # 更新到v3
+        uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
