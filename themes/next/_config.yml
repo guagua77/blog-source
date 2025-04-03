@@ -311,6 +311,7 @@ post_navigation: left
 
 # TagCloud settings for tags page.
 tagcloud:
+  enable: true
   min: 12 # Minimum font size in px
   max: 30 # Maximum font size in px
   amount: 200 # Total amount of tags
