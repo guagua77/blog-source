@@ -7,7 +7,6 @@ tags:
 ---
 
 {% raw %}
-// ... existing code ...
 <div class="dev-tools">
     <div class="container">
         <h1>开发工具集</h1>
@@ -575,7 +574,6 @@ tags:
         }
     }
 </script>
-// ... existing code ...
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
