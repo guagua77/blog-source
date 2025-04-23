@@ -7,6 +7,7 @@ tags:
 ---
 
 {% raw %}
+// ... existing code ...
 <div class="dev-tools">
     <div class="container">
         <h1>开发工具集</h1>
@@ -19,42 +20,72 @@ tags:
 
         <!-- JSON工具部分 -->
         <div id="json-tool" class="tool-section active">
-            <div class="input-section">
-                <textarea id="inputJson" placeholder="请输入JSON数据..."></textarea>
-                <div class="buttons">
-                    <button onclick="formatJson()">格式化</button>
-                    <button onclick="minifyJson()">压缩</button>
-                    <button onclick="validateJson()">验证</button>
-                    <button onclick="copyToClipboard('outputJson')">复制结果</button>
-                    <button onclick="clearJson()">清空</button>
+            <div class="resizable-container">
+                <div class="resizable-panel input-section">
+                    <div class="panel-header">
+                        <span>输入</span>
+                        <div class="panel-controls">
+                            <button class="expand-btn" onclick="toggleFullscreen(this)">⤢</button>
+                        </div>
+                    </div>
+                    <textarea id="inputJson" placeholder="请输入JSON数据..."></textarea>
+                    <div class="buttons">
+                        <button onclick="formatJson()">格式化</button>
+                        <button onclick="minifyJson()">压缩</button>
+                        <button onclick="validateJson()">验证</button>
+                        <button onclick="copyToClipboard('outputJson')">复制结果</button>
+                        <button onclick="clearJson()">清空</button>
+                    </div>
                 </div>
-            </div>
-            <div class="output-section">
-                <pre id="outputJson" class="json-output"></pre>
-                <div id="jsonError" class="error-message"></div>
+                <div class="resize-handle horizontal"></div>
+                <div class="resizable-panel output-section">
+                    <div class="panel-header">
+                        <span>输出</span>
+                        <div class="panel-controls">
+                            <button class="expand-btn" onclick="toggleFullscreen(this)">⤢</button>
+                        </div>
+                    </div>
+                    <pre id="outputJson" class="json-output"></pre>
+                    <div id="jsonError" class="error-message"></div>
+                </div>
             </div>
         </div>
 
         <!-- 时间戳工具部分 -->
         <div id="timestamp-tool" class="tool-section">
-            <div class="input-section">
-                <div class="timestamp-input">
-                    <input type="text" id="timestampInput" placeholder="输入时间戳或日期">
-                    <select id="timestampUnit">
-                        <option value="seconds">秒</option>
-                        <option value="milliseconds">毫秒</option>
-                    </select>
+            <div class="resizable-container">
+                <div class="resizable-panel input-section">
+                    <div class="panel-header">
+                        <span>输入</span>
+                        <div class="panel-controls">
+                            <button class="expand-btn" onclick="toggleFullscreen(this)">⤢</button>
+                        </div>
+                    </div>
+                    <div class="timestamp-input">
+                        <input type="text" id="timestampInput" placeholder="输入时间戳或日期">
+                        <select id="timestampUnit">
+                            <option value="seconds">秒</option>
+                            <option value="milliseconds">毫秒</option>
+                        </select>
+                    </div>
+                    <div class="buttons">
+                        <button onclick="convertTimestamp()">转换</button>
+                        <button onclick="getCurrentTimestamp()">当前时间戳</button>
+                        <button onclick="copyToClipboard('timestampOutput')">复制结果</button>
+                        <button onclick="clearTimestamp()">清空</button>
+                    </div>
                 </div>
-                <div class="buttons">
-                    <button onclick="convertTimestamp()">转换</button>
-                    <button onclick="getCurrentTimestamp()">当前时间戳</button>
-                    <button onclick="copyToClipboard('timestampOutput')">复制结果</button>
-                    <button onclick="clearTimestamp()">清空</button>
+                <div class="resize-handle horizontal"></div>
+                <div class="resizable-panel output-section">
+                    <div class="panel-header">
+                        <span>输出</span>
+                        <div class="panel-controls">
+                            <button class="expand-btn" onclick="toggleFullscreen(this)">⤢</button>
+                        </div>
+                    </div>
+                    <div id="timestampOutput" class="timestamp-output"></div>
+                    <div id="timestampError" class="error-message"></div>
                 </div>
-            </div>
-            <div class="output-section">
-                <div id="timestampOutput" class="timestamp-output"></div>
-                <div id="timestampError" class="error-message"></div>
             </div>
         </div>
     </div>
@@ -116,138 +147,185 @@ tags:
         to { opacity: 1; }
     }
     .tool-section.active {
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
+        display: block;
     }
-    .input-section, .output-section {
+    
+    /* 可调整大小的面板样式 */
+    .resizable-container {
         display: flex;
         flex-direction: column;
-        gap: 15px;
-        background-color: white;
-        padding: 20px;
+        height: 600px;
         border-radius: 8px;
+        overflow: hidden;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        background-color: white;
     }
+    
+    .resizable-panel {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 200px;
+        position: relative;
+        overflow: hidden;
+        background-color: white;
+    }
+    
+    .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        background-color: #f5f5f5;
+        border-bottom: 1px solid #ddd;
+        font-weight: 500;
+    }
+    
+    .panel-controls {
+        display: flex;
+        gap: 5px;
+    }
+    
+    .expand-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 0 5px;
+        color: #555;
+        box-shadow: none;
+        min-width: auto;
+    }
+    
+    .expand-btn:hover {
+        background: none;
+        color: #333;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .resize-handle {
+        background-color: #e0e0e0;
+        position: relative;
+        transition: background-color 0.3s;
+    }
+    
+    .resize-handle.horizontal {
+        height: 6px;
+        cursor: row-resize;
+    }
+    
+    .resize-handle.vertical {
+        width: 6px;
+        cursor: col-resize;
+    }
+    
+    .resize-handle:hover, .resize-handle.active {
+        background-color: #4CAF50;
+    }
+    
+    .resize-handle::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    
+    .resize-handle.horizontal::after {
+        width: 30px;
+        height: 2px;
+        background-color: #bbb;
+    }
+    
+    .resize-handle.vertical::after {
+        width: 2px;
+        height: 30px;
+        background-color: #bbb;
+    }
+    
+    .fullscreen {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 9999 !important;
+        border-radius: 0 !important;
+    }
+    
+    /* 原有样式调整 */
+    .input-section, .output-section {
+        padding: 0;
+        box-shadow: none;
+        border-radius: 0;
+        gap: 0;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
     textarea {
+        flex: 1;
         width: 100%;
-        height: 250px;
+        height: auto;
         padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        resize: vertical;
+        border: none;
+        border-radius: 0;
+        resize: none;
         font-family: 'Consolas', 'Courier New', monospace;
         font-size: 1rem;
         line-height: 1.5;
-        transition: border-color 0.3s;
-        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
     }
-    textarea:focus {
-        outline: none;
-        border-color: #4CAF50;
-        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
-    }
+    
     .timestamp-input {
+        padding: 15px;
         display: flex;
         gap: 15px;
     }
-    .timestamp-input input {
-        flex: 1;
-        padding: 12px 15px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 1rem;
-        transition: border-color 0.3s;
-    }
-    .timestamp-input input:focus {
-        outline: none;
-        border-color: #4CAF50;
-        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
-    }
-    .timestamp-input select {
-        padding: 12px 15px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        background-color: white;
-        font-size: 1rem;
-    }
+    
     .buttons {
         display: flex;
         flex-wrap: wrap;
-        gap: 12px;
-        justify-content: center;
-    }
-    button {
-        padding: 12px 22px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 1rem;
-        font-weight: 500;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        min-width: 120px;
-    }
-    button:hover {
-        background-color: #3d9440;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-    button:active {
-        transform: translateY(0);
-    }
-    .error-message {
-        color: #e53935;
-        margin-top: 10px;
-        display: none;
-        font-size: 0.95rem;
-        background-color: #ffebee;
-        padding: 10px;
-        border-radius: 4px;
-        border-left: 4px solid #e53935;
-    }
-    .json-output {
-        background-color: #f5f5f5;
-        padding: 20px;
-        border-radius: 6px;
-        white-space: pre-wrap;
-        font-family: 'Consolas', 'Courier New', monospace;
-        min-height: 250px;
-        max-height: 500px;
-        overflow-y: auto;
-        border: 1px solid #eee;
-        font-size: 1rem;
-        line-height: 1.5;
-    }
-    .timestamp-output {
-        background-color: #f5f5f5;
-        padding: 20px;
-        border-radius: 6px;
-        font-family: 'Consolas', 'Courier New', monospace;
-        border: 1px solid #eee;
-        font-size: 1rem;
-        line-height: 1.8;
-    }
-    .timestamp-output div {
-        margin-bottom: 8px;
+        gap: 10px;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-top: 1px solid #eee;
     }
     
-    /* 响应式设计 */
-    @media (max-width: 768px) {
-        .dev-tools {
-            padding: 15px;
-        }
-        .buttons {
-            flex-direction: column;
-        }
-        button {
-            width: 100%;
-        }
-        .timestamp-input {
-            flex-direction: column;
-        }
+    .json-output {
+        flex: 1;
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 0;
+        white-space: pre-wrap;
+        font-family: 'Consolas', 'Courier New', monospace;
+        overflow-y: auto;
+        border: none;
+        font-size: 1rem;
+        line-height: 1.5;
+        margin: 0;
+    }
+    
+    .timestamp-output {
+        flex: 1;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-radius: 0;
+        font-family: 'Consolas', 'Courier New', monospace;
+        overflow-y: auto;
+        border: none;
+    }
+    
+    .error-message {
+        margin: 0;
+        padding: 10px 15px;
+        border-radius: 0;
+        border-left: none;
+        background-color: #ffebee;
+        color: #e53935;
     }
 </style>
 
@@ -419,7 +497,72 @@ tags:
     function hideError(elementId) {
         document.getElementById(elementId).style.display = 'none';
     }
+    
+    // 拖拽调整大小功能
+    document.addEventListener('DOMContentLoaded', function() {
+        initResizableHandles();
+    });
+    
+    function initResizableHandles() {
+        const resizeHandles = document.querySelectorAll('.resize-handle');
+        
+        resizeHandles.forEach(handle => {
+            handle.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                handle.classList.add('active');
+                
+                const isHorizontal = handle.classList.contains('horizontal');
+                const container = handle.parentElement;
+                const panels = Array.from(container.querySelectorAll('.resizable-panel'));
+                const index = Array.from(container.children).indexOf(handle);
+                const prevPanel = panels[Math.floor(index / 2)];
+                const nextPanel = panels[Math.ceil(index / 2)];
+                
+                const startPos = isHorizontal ? e.clientY : e.clientX;
+                const prevPanelSize = isHorizontal ? prevPanel.offsetHeight : prevPanel.offsetWidth;
+                const nextPanelSize = isHorizontal ? nextPanel.offsetHeight : nextPanel.offsetWidth;
+                
+                function onMouseMove(e) {
+                    const currentPos = isHorizontal ? e.clientY : e.clientX;
+                    const diff = currentPos - startPos;
+                    
+                    if (isHorizontal) {
+                        prevPanel.style.height = `${prevPanelSize + diff}px`;
+                        nextPanel.style.height = `${nextPanelSize - diff}px`;
+                    } else {
+                        prevPanel.style.width = `${prevPanelSize + diff}px`;
+                        nextPanel.style.width = `${nextPanelSize - diff}px`;
+                    }
+                }
+                
+                function onMouseUp() {
+                    handle.classList.remove('active');
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                }
+                
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+        });
+    }
+    
+    // 全屏切换功能
+    function toggleFullscreen(btn) {
+        const panel = btn.closest('.resizable-panel');
+        panel.classList.toggle('fullscreen');
+        
+        if (panel.classList.contains('fullscreen')) {
+            btn.textContent = '⤓';
+            document.body.style.overflow = 'hidden';
+        } else {
+            btn.textContent = '⤢';
+            document.body.style.overflow = '';
+        }
+    }
 </script>
+// ... existing code ...
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
