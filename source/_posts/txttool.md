@@ -1,7 +1,7 @@
 ---
 title: 文本去换行
 date: 2025-04-23
-layout: interactive
+layout: page
 tags:
   - 工具
 ---
