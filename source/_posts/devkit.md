@@ -339,8 +339,27 @@ tags:
                 const timestamp = unit === 'seconds' ? parseInt(input) * 1000 : parseInt(input);
                 date = new Date(timestamp);
             } else {
-                // 输入是日期字符串
-                date = new Date(input);
+                // 尝试多种日期格式
+                const formats = [
+                    input, // 原始输入
+                    input.replace(/\//g, '-'), // 将斜杠替换为横杠
+                    input.replace(/(\d{4})\/(\d{1,2})\/(\d{1,2})/, '$1-$2-$3'), // 处理 2025/4/23 格式
+                    input.replace(/(\d{4})\/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})/, '$1-$2-$3 $4:$5:$6') // 处理完整时间格式
+                ];
+
+                let validDate = null;
+                for (const format of formats) {
+                    date = new Date(format);
+                    if (!isNaN(date.getTime())) {
+                        validDate = date;
+                        break;
+                    }
+                }
+
+                if (!validDate) {
+                    throw new Error('无法识别的日期格式');
+                }
+                date = validDate;
             }
 
             if (isNaN(date.getTime())) {
@@ -353,6 +372,7 @@ tags:
                 <div>UTC时间: ${date.toUTCString()}</div>
                 <div>时间戳(秒): ${Math.floor(date.getTime() / 1000)}</div>
                 <div>时间戳(毫秒): ${date.getTime()}</div>
+                <div>ISO格式: ${date.toISOString()}</div>
             `;
             hideError('timestampError');
         } catch (e) {
