@@ -6,6 +6,7 @@ tags:
   - 工具
 ---
 
+{% raw %}
 <div class="dev-tools">
     <div class="container">
         <h1>开发工具集</h1>
@@ -161,9 +162,6 @@ tags:
     }
 </style>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-
 <script>
     // 标签页切换
     function switchTab(tool) {
@@ -291,6 +289,15 @@ tags:
         const text = element.textContent || element.innerText;
         navigator.clipboard.writeText(text).then(() => {
             alert('已复制到剪贴板！');
+        }).catch(() => {
+            // 兼容旧浏览器
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('已复制到剪贴板！');
         });
     }
 
@@ -304,3 +311,7 @@ tags:
         document.getElementById(elementId).style.display = 'none';
     }
 </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+{% endraw %}
