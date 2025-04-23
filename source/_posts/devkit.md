@@ -403,60 +403,74 @@ tags:
 
     // 时间戳工具函数
     function convertTimestamp() {
-        try {
-            const input = document.getElementById('timestampInput').value;
-            const unit = document.getElementById('timestampUnit').value;
-            if (!input.trim()) {
-                showError('timestampError', '请输入时间戳或日期');
-                return;
+    try {
+        const input = document.getElementById('timestampInput').value;
+        const unit = document.getElementById('timestampUnit').value;
+        if (!input.trim()) {
+            showError('timestampError', '请输入时间戳或日期');
+            return;
+        }
+
+        let date;
+        if (/^\d+$/.test(input)) {
+            // 输入是时间戳
+            const timestamp = unit === 'seconds' ? parseInt(input) * 1000 : parseInt(input);
+            date = new Date(timestamp);
+        } else {
+            // 尝试多种日期格式
+            const formats = [
+                input, // 原始输入
+                input.replace(/\//g, '-'), // 将斜杠替换为横杠
+                input.replace(/(\d{4})\/(\d{1,2})\/(\d{1,2})/, '$1-$2-$3'), // 处理 2025/4/23 格式
+                input.replace(/(\d{4})\/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})/, '$1-$2-$3 $4:$5:$6'), // 处理完整时间格式
+                // 添加对 2025/4/23 11:55:02 格式的直接支持
+                input.replace(/(\d{4})\/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})/, '$1-$2-$3T$4:$5:$6')
+            ];
+
+            let validDate = null;
+            for (const format of formats) {
+                date = new Date(format);
+                if (!isNaN(date.getTime())) {
+                    validDate = date;
+                    break;
+                }
             }
 
-            let date;
-            if (/^\d+$/.test(input)) {
-                // 输入是时间戳
-                const timestamp = unit === 'seconds' ? parseInt(input) * 1000 : parseInt(input);
-                date = new Date(timestamp);
-            } else {
-                // 尝试多种日期格式
-                const formats = [
-                    input, // 原始输入
-                    input.replace(/\//g, '-'), // 将斜杠替换为横杠
-                    input.replace(/(\d{4})\/(\d{1,2})\/(\d{1,2})/, '$1-$2-$3'), // 处理 2025/4/23 格式
-                    input.replace(/(\d{4})\/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})/, '$1-$2-$3 $4:$5:$6') // 处理完整时间格式
-                ];
-
-                let validDate = null;
-                for (const format of formats) {
-                    date = new Date(format);
+            if (!validDate) {
+                // 尝试手动解析日期
+                const dateMatch = input.match(/(\d{4})\/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})/);
+                if (dateMatch) {
+                    const [_, year, month, day, hour, minute, second] = dateMatch;
+                    date = new Date(year, month - 1, day, hour, minute, second);
                     if (!isNaN(date.getTime())) {
                         validDate = date;
-                        break;
                     }
                 }
-
-                if (!validDate) {
-                    throw new Error('无法识别的日期格式');
-                }
-                date = validDate;
             }
 
-            if (isNaN(date.getTime())) {
-                throw new Error('无效的日期格式');
+            if (!validDate) {
+                throw new Error('无法识别的日期格式');
             }
-
-            const output = document.getElementById('timestampOutput');
-            output.innerHTML = `
-                <div>本地时间: ${date.toLocaleString()}</div>
-                <div>UTC时间: ${date.toUTCString()}</div>
-                <div>时间戳(秒): ${Math.floor(date.getTime() / 1000)}</div>
-                <div>时间戳(毫秒): ${date.getTime()}</div>
-                <div>ISO格式: ${date.toISOString()}</div>
-            `;
-            hideError('timestampError');
-        } catch (e) {
-            showError('timestampError', '转换失败: ' + e.message);
+            date = validDate;
         }
+
+        if (isNaN(date.getTime())) {
+            throw new Error('无效的日期格式');
+        }
+
+        const output = document.getElementById('timestampOutput');
+        output.innerHTML = `
+            <div>本地时间: ${date.toLocaleString()}</div>
+            <div>UTC时间: ${date.toUTCString()}</div>
+            <div>时间戳(秒): ${Math.floor(date.getTime() / 1000)}</div>
+            <div>时间戳(毫秒): ${date.getTime()}</div>
+            <div>ISO格式: ${date.toISOString()}</div>
+        `;
+        hideError('timestampError');
+    } catch (e) {
+        showError('timestampError', '转换失败: ' + e.message);
     }
+}
 
     function getCurrentTimestamp() {
         const now = new Date();
